@@ -331,124 +331,160 @@ export default function TabOneScreen() {
 
     return (
       <View
-        className={`mb-3 overflow-hidden rounded-2xl border ${
+        className={`mb-3.5 overflow-hidden rounded-3xl border ${
           isActive
-            ? "border-blue-500 bg-blue-500/10"
+            ? "border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/10"
             : isCompleted
-              ? "border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/5"
-              : "border-white/20 dark:border-white/10 bg-white/45 dark:bg-slate-900/40"
+              ? "border-emerald-500/10 bg-white/40 dark:bg-slate-900/30"
+              : "border-slate-200/50 dark:border-slate-800/40 bg-white/70 dark:bg-slate-900/60"
         }`}
       >
         <BlurView
-          intensity={isActive ? 85 : 45}
+          intensity={isActive ? 80 : 35}
           tint={isDark ? "dark" : "light"}
           className="p-4 flex-row items-center justify-between"
         >
-          {/* Drag Handle (Mobile) / Order Buttons (Web) */}
-          <View className="flex-row items-center mr-3">
+          {/* 1. Drag / Order Controls */}
+          <View className="flex-row items-center mr-2">
             {Platform.OS === "web" ? (
-              <View className="flex-col items-center mr-2">
+              <View className="flex-col items-center mr-1">
                 <TouchableOpacity
                   onPress={() => moveStopWeb(index, index - 1)}
                   disabled={index === 0}
-                  className={`p-1 rounded-md mb-1 ${index === 0 ? "opacity-30" : "hover:bg-white/20"}`}
+                  className={`p-1 rounded-lg mb-0.5 ${index === 0 ? "opacity-20" : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200"}`}
                 >
-                  <ArrowUp color={isDark ? "#FFF" : "#000"} size={14} />
+                  <ArrowUp color={isDark ? "#94a3b8" : "#64748b"} size={13} strokeWidth={2.5} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => moveStopWeb(index, index + 1)}
                   disabled={index === stops.length - 1}
-                  className={`p-1 rounded-md ${index === stops.length - 1 ? "opacity-30" : "hover:bg-white/20"}`}
+                  className={`p-1 rounded-lg ${index === stops.length - 1 ? "opacity-20" : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200"}`}
                 >
-                  <ArrowDown color={isDark ? "#FFF" : "#000"} size={14} />
+                  <ArrowDown color={isDark ? "#94a3b8" : "#64748b"} size={13} strokeWidth={2.5} />
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity onLongPress={drag} className="p-2 mr-1 active:scale-95">
-                <View className="w-4 h-6 flex-row flex-wrap justify-between content-between">
+              <TouchableOpacity onLongPress={drag} className="p-2 mr-1 active:scale-90 bg-slate-100 dark:bg-slate-800/50 rounded-xl">
+                <View className="w-3.5 h-5 flex-row flex-wrap justify-between content-between">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <View key={i} className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full m-[1px]" />
+                    <View key={i} className="w-[3px] h-[3px] bg-slate-400 dark:bg-slate-500 rounded-full m-[1px]" />
                   ))}
                 </View>
               </TouchableOpacity>
             )}
+          </View>
 
-            {/* Badge Order number */}
-            <View className={`w-6 h-6 rounded-full flex items-center justify-center ${isStart ? "bg-blue-600" : isCompleted ? "bg-emerald-600" : "bg-black/10 dark:bg-white/20"}`}>
-              <Text className="text-white text-xs font-bold">{index + 1}</Text>
+          {/* 2. Connected Timeline Node */}
+          <View className="w-9 items-center justify-center relative self-stretch mr-2">
+            {/* Line segment */}
+            {stops.length > 1 && (
+              <View
+                className={`absolute w-[2px] bg-slate-200 dark:bg-slate-800 ${
+                  index === 0
+                    ? "top-1/2 bottom-0"
+                    : index === stops.length - 1
+                    ? "top-0 bottom-1/2"
+                    : "top-0 bottom-0"
+                }`}
+              />
+            )}
+            {/* Circular node */}
+            <View
+              className={`w-7 h-7 rounded-full items-center justify-center border-2 ${
+                isStart
+                  ? "bg-indigo-600 border-indigo-600 shadow-md shadow-indigo-500/25"
+                  : isCompleted
+                  ? "bg-emerald-500 border-emerald-500 shadow-sm shadow-emerald-500/10"
+                  : isImportant
+                  ? "bg-amber-400 border-amber-400 shadow-sm shadow-amber-400/10"
+                  : "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+              }`}
+            >
+              {isStart ? (
+                <Navigation size={12} color="#fff" strokeWidth={3} />
+              ) : isCompleted ? (
+                <Check size={11} color="#fff" strokeWidth={3} />
+              ) : isImportant ? (
+                <Star size={11} color="#fff" fill="#fff" />
+              ) : (
+                <Text className="text-[10px] font-bold text-slate-600 dark:text-slate-400">{index + 1}</Text>
+              )}
             </View>
           </View>
 
-          {/* Info Section */}
+          {/* 3. Info Content */}
           <View className="flex-1 pr-2">
             <TextInput
               value={item.nickname || item.address}
               onChangeText={(text) => updateStop(item.id, "nickname", text)}
-              className={`text-base font-bold ${
+              className={`text-base font-bold tracking-tight p-0 ${
                 isCompleted
-                  ? "text-gray-400 dark:text-gray-500 line-through"
-                  : "text-gray-900 dark:text-white"
+                  ? "text-slate-400 dark:text-slate-600 line-through"
+                  : "text-slate-900 dark:text-white"
               }`}
               placeholder={t("nickname")}
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#94a3b8"
             />
             <Text
               numberOfLines={1}
-              className={`text-xs ${
+              className={`text-xs mt-0.5 ${
                 isCompleted
-                  ? "text-gray-400/80 dark:text-gray-500/80"
-                  : "text-gray-600 dark:text-gray-400"
+                  ? "text-slate-400/70 dark:text-slate-600/75"
+                  : "text-slate-500 dark:text-slate-400"
               }`}
             >
               {item.address}
             </Text>
 
             {/* Badges */}
-            <View className="flex-row items-center gap-2 mt-1.5">
-              {isImportant && (
-                <View className="flex-row items-center px-1.5 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/25">
-                  <Star fill="#EAB308" color="#EAB308" size={10} />
-                  <Text className="text-[10px] text-yellow-700 dark:text-yellow-400 ml-1 font-bold">
-                    {t("priority")}
-                  </Text>
-                </View>
-              )}
-              {isStart && (
-                <View className="flex-row items-center px-1.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25">
-                  <MapPin color="#3B82F6" size={10} />
-                  <Text className="text-[10px] text-blue-700 dark:text-blue-400 ml-1 font-bold">
-                    {t("startPoint")}
-                  </Text>
-                </View>
-              )}
-            </View>
+            {(isImportant || isStart) && (
+              <View className="flex-row items-center gap-1.5 mt-2">
+                {isStart && (
+                  <View className="flex-row items-center px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                    <MapPin color={isDark ? "#818cf8" : "#4f46e5"} size={9} strokeWidth={2.5} />
+                    <Text className="text-[9px] text-indigo-700 dark:text-indigo-300 ml-1 font-extrabold tracking-wide uppercase">
+                      {t("startPoint")}
+                    </Text>
+                  </View>
+                )}
+                {isImportant && (
+                  <View className="flex-row items-center px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                    <Star fill="#eab308" color="#eab308" size={9} />
+                    <Text className="text-[9px] text-amber-700 dark:text-amber-400 ml-1 font-extrabold tracking-wide uppercase">
+                      {t("priority")}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
 
-          {/* Button Operations */}
+          {/* 4. Action Controls */}
           <View className="flex-row items-center space-x-1">
             <TouchableOpacity
               onPress={() => setStartPoint(item.id)}
               className={`p-2 rounded-xl border ${
                 isStart
-                  ? "border-blue-500 bg-blue-500/15"
-                  : "border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5"
-              }`}
+                  ? "border-indigo-500 bg-indigo-500/15"
+                  : "border-slate-200/50 dark:border-slate-800/40 bg-slate-100/70 dark:bg-slate-800/50"
+              } active:scale-95`}
             >
-              <MapPin color={isStart ? "#3B82F6" : isDark ? "#A1A1AA" : "#71717A"} size={16} />
+              <MapPin color={isStart ? "#4f46e5" : isDark ? "#94a3b8" : "#64748b"} size={15} strokeWidth={2.5} />
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => updateStop(item.id, "is_important", !isImportant)}
               className={`p-2 rounded-xl border ${
                 isImportant
-                  ? "border-yellow-500 bg-yellow-500/15"
-                  : "border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5"
-              }`}
+                  ? "border-amber-500 bg-amber-500/15"
+                  : "border-slate-200/50 dark:border-slate-800/40 bg-slate-100/70 dark:bg-slate-800/50"
+              } active:scale-95`}
             >
               <Star
-                fill={isImportant ? "#EAB308" : "none"}
-                color={isImportant ? "#EAB308" : isDark ? "#A1A1AA" : "#71717A"}
-                size={16}
+                fill={isImportant ? "#eab308" : "none"}
+                color={isImportant ? "#eab308" : isDark ? "#94a3b8" : "#64748b"}
+                size={15}
+                strokeWidth={2.5}
               />
             </TouchableOpacity>
 
@@ -457,17 +493,17 @@ export default function TabOneScreen() {
               className={`p-2 rounded-xl border ${
                 isCompleted
                   ? "border-emerald-500 bg-emerald-500/15"
-                  : "border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5"
-              }`}
+                  : "border-slate-200/50 dark:border-slate-800/40 bg-slate-100/70 dark:bg-slate-800/50"
+              } active:scale-95`}
             >
-              <Check color={isCompleted ? "#10B981" : isDark ? "#A1A1AA" : "#71717A"} size={16} />
+              <Check color={isCompleted ? "#10b981" : isDark ? "#94a3b8" : "#64748b"} size={15} strokeWidth={2.5} />
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => deleteStop(item.id)}
-              className="p-2 rounded-xl border border-red-500/20 bg-red-500/10"
+              className="p-2 rounded-xl border border-red-500/10 bg-red-500/5 dark:bg-red-500/10 active:scale-95"
             >
-              <Trash2 color="#EF4444" size={16} />
+              <Trash2 color="#ef4444" size={15} strokeWidth={2.5} />
             </TouchableOpacity>
           </View>
         </BlurView>
@@ -481,34 +517,34 @@ export default function TabOneScreen() {
   };
 
   return (
-    <View className="flex-1 relative bg-slate-100 dark:bg-slate-950">
+    <View className="flex-1 relative bg-slate-50 dark:bg-[#07090e]">
       {/* Background glowing orbs */}
       <View style={StyleSheet.absoluteFill}>
-        <View className="absolute top-[-50px] left-[-50px] w-80 h-80 rounded-full bg-blue-500/15 dark:bg-blue-600/10" />
-        <View className="absolute top-[280px] right-[-100px] w-96 h-96 rounded-full bg-fuchsia-500/15 dark:bg-purple-600/10" />
-        <View className="absolute bottom-[50px] left-[-80px] w-80 h-80 rounded-full bg-cyan-400/15 dark:bg-indigo-600/10" />
+        <View className="absolute top-[-100px] left-[-100px] w-96 h-96 rounded-full bg-indigo-500/10 dark:bg-indigo-600/5 blur-3xl" />
+        <View className="absolute top-[250px] right-[-150px] w-[500px] h-[500px] rounded-full bg-fuchsia-500/10 dark:bg-purple-600/5 blur-3xl" />
+        <View className="absolute bottom-[-100px] left-[-100px] w-96 h-96 rounded-full bg-cyan-500/10 dark:bg-blue-600/5 blur-3xl" />
       </View>
 
       {/* Global Toast Notification */}
       {toast && (
-        <View className="absolute top-12 left-4 right-4 z-50 rounded-2xl overflow-hidden border border-white/20 dark:border-white/5 shadow-2xl">
-          <BlurView intensity={90} tint={isDark ? "dark" : "light"} className="px-4 py-3 flex-row items-center space-x-3 bg-white/70 dark:bg-slate-900/80">
+        <View className="absolute top-14 left-4 right-4 z-50 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-800/40 shadow-xl">
+          <BlurView intensity={90} tint={isDark ? "dark" : "light"} className="px-5 py-2.5 flex-row items-center space-x-3 bg-white/70 dark:bg-slate-900/80">
             {toast.type === "success" && (
-              <View className="bg-emerald-500/20 p-1.5 rounded-lg">
-                <Check color="#10B981" size={16} />
+              <View className="bg-emerald-500/20 p-1 rounded-full">
+                <Check color="#10B981" size={14} strokeWidth={3} />
               </View>
             )}
             {toast.type === "info" && (
-              <View className="bg-blue-500/20 p-1.5 rounded-lg">
-                <Sparkles color="#3B82F6" size={16} />
+              <View className="bg-indigo-500/20 p-1 rounded-full">
+                <Sparkles color="#6366f1" size={14} strokeWidth={2.5} />
               </View>
             )}
             {toast.type === "error" && (
-              <View className="bg-red-500/20 p-1.5 rounded-lg">
-                <X color="#EF4444" size={16} />
+              <View className="bg-red-500/20 p-1 rounded-full">
+                <X color="#EF4444" size={14} strokeWidth={3} />
               </View>
             )}
-            <Text className="text-gray-900 dark:text-white font-semibold flex-1 text-sm">{toast.message}</Text>
+            <Text className="text-slate-800 dark:text-slate-200 font-bold flex-1 text-xs">{toast.message}</Text>
           </BlurView>
         </View>
       )}
@@ -519,18 +555,18 @@ export default function TabOneScreen() {
           className="flex-1"
         >
           {/* Header Panel */}
-          <View className="overflow-hidden border-b border-black/5 dark:border-white/10">
+          <View className="overflow-hidden border-b border-slate-200/50 dark:border-slate-800/40">
             <BlurView intensity={30} tint={isDark ? "dark" : "light"} className="px-6 py-4 flex-row items-center justify-between">
-              <View className="flex-row items-center space-x-2.5">
-                <View className="bg-blue-600 p-2 rounded-xl shadow-lg">
-                  <Navigation color="white" size={20} />
+              <View className="flex-row items-center space-x-3">
+                <View className="bg-gradient-to-tr from-indigo-600 to-violet-600 p-2.5 rounded-2xl shadow-lg shadow-indigo-500/20">
+                  <Navigation color="white" size={18} strokeWidth={2.5} />
                 </View>
                 <View>
-                  <Text className="text-xl font-black text-gray-900 dark:text-white leading-none">
+                  <Text className="text-xl font-extrabold tracking-tight text-slate-950 dark:text-white leading-none">
                     RouteMaster
                   </Text>
-                  <Text className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
-                    Apple Frosted Glass Theme
+                  <Text className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider uppercase mt-0.5">
+                    Logistics Planner
                   </Text>
                 </View>
               </View>
@@ -540,20 +576,19 @@ export default function TabOneScreen() {
                 {stops.length > 0 && (
                   <TouchableOpacity
                     onPress={clearAllStops}
-                    className="p-2.5 rounded-xl border border-red-500/10 bg-red-500/5 active:bg-red-500/20"
-                    title={t("clearAll")}
+                    className="p-2.5 rounded-xl border border-red-500/10 bg-red-500/5 dark:bg-red-500/10 active:scale-95"
                   >
-                    <Trash2 color="#EF4444" size={16} />
+                    <Trash2 color="#ef4444" size={15} strokeWidth={2.5} />
                   </TouchableOpacity>
                 )}
 
                 {/* Language Switch */}
                 <TouchableOpacity
                   onPress={handleLanguageSwitch}
-                  className="px-3.5 py-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/10 dark:bg-black/10 flex-row items-center space-x-1.5 active:bg-white/20"
+                  className="px-3 py-2 rounded-xl border border-slate-200/50 dark:border-slate-800/40 bg-white/40 dark:bg-slate-900/40 flex-row items-center space-x-1 active:scale-95"
                 >
-                  <Globe color={isDark ? "#FFF" : "#000"} size={14} />
-                  <Text className="text-xs font-bold text-gray-900 dark:text-white">
+                  <Globe color={isDark ? "#94a3b8" : "#64748b"} size={13} strokeWidth={2.5} />
+                  <Text className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300">
                     {i18n.language === "en" ? "한" : "EN"}
                   </Text>
                 </TouchableOpacity>
@@ -564,40 +599,40 @@ export default function TabOneScreen() {
           {/* Main Content Scroll View */}
           <ScrollView
             className="flex-1 px-4 pt-4"
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={{ paddingBottom: 110 }}
             keyboardShouldPersistTaps="handled"
           >
             {/* Optimize Route Big Button */}
-            <View className="mb-5 overflow-hidden rounded-3xl border border-white/20 dark:border-white/5">
-              <BlurView intensity={40} tint={isDark ? "dark" : "light"} className="p-4 bg-white/30 dark:bg-slate-900/30">
+            <View className="mb-5 overflow-hidden rounded-3xl border border-slate-200/50 dark:border-slate-800/40 shadow-sm">
+              <BlurView intensity={35} tint={isDark ? "dark" : "light"} className="p-4 bg-white/40 dark:bg-slate-900/40">
                 <TouchableOpacity
                   onPress={handleOptimize}
                   disabled={stops.length < 2 || isOptimizing}
-                  className={`w-full py-4 rounded-2xl shadow-xl flex-row items-center justify-center space-x-2 ${
+                  className={`w-full py-4 rounded-2xl flex-row items-center justify-center space-x-2 active:scale-[0.98] ${
                     stops.length < 2
-                      ? "bg-black/10 dark:bg-white/5 opacity-60"
-                      : "bg-blue-600 active:bg-blue-700"
+                      ? "bg-slate-200 dark:bg-slate-800/60 opacity-50"
+                      : "bg-gradient-to-r from-indigo-600 to-violet-600 shadow-lg shadow-indigo-500/25"
                   }`}
                 >
                   {isOptimizing ? (
-                    <RefreshCw color="white" className="animate-spin" size={20} />
+                    <RefreshCw color="white" className="animate-spin" size={18} strokeWidth={2.5} />
                   ) : (
-                    <Sparkles color="white" size={20} />
+                    <Sparkles color="white" size={18} strokeWidth={2.5} />
                   )}
-                  <Text className="text-white text-lg font-black text-center">
+                  <Text className="text-white text-base font-black tracking-tight text-center">
                     {stops.length < 2 ? t("optimize") : `${t("optimize")} (${stops.length})`}
                   </Text>
                 </TouchableOpacity>
                 
                 {stops.length < 2 ? (
-                  <View className="flex-row items-center justify-center mt-2.5 space-x-1.5">
-                    <Info color="#6B7280" size={12} />
-                    <Text className="text-xs text-center text-gray-500 dark:text-gray-400">
+                  <View className="flex-row items-center justify-center mt-2.5 space-x-1">
+                    <Info color={isDark ? "#64748b" : "#94a3b8"} size={11} />
+                    <Text className="text-[10px] text-center text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
                       Add at least 2 stops to optimize
                     </Text>
                   </View>
                 ) : (
-                  <Text className="text-[10px] text-center text-gray-500 dark:text-gray-400 mt-2 font-medium">
+                  <Text className="text-[10px] text-center text-slate-400 dark:text-slate-500 mt-2 font-medium">
                     {Platform.OS === "web" ? t("webReorder") : t("dragToReorder")}
                   </Text>
                 )}
@@ -605,11 +640,13 @@ export default function TabOneScreen() {
             </View>
 
             {/* Add Stop Card */}
-            <View className="mb-6 overflow-hidden rounded-3xl border border-white/30 dark:border-white/10 shadow-lg">
-              <BlurView intensity={35} tint={isDark ? "dark" : "light"} className="p-5 bg-white/40 dark:bg-slate-900/40">
+            <View className="mb-6 overflow-hidden rounded-3xl border border-slate-200/50 dark:border-slate-800/40 shadow-sm">
+              <BlurView intensity={30} tint={isDark ? "dark" : "light"} className="p-5 bg-white/40 dark:bg-slate-900/40">
                 <View className="flex-row items-center space-x-2 mb-4">
-                  <ListTodo color={isDark ? "#93C5FD" : "#2563EB"} size={18} />
-                  <Text className="text-lg font-black text-gray-900 dark:text-white">
+                  <View className="bg-indigo-500/10 p-1.5 rounded-lg">
+                    <ListTodo color={isDark ? "#818cf8" : "#4f46e5"} size={16} strokeWidth={2.5} />
+                  </View>
+                  <Text className="text-lg font-black tracking-tight text-slate-955 dark:text-white">
                     {t("addStop")}
                   </Text>
                 </View>
@@ -620,12 +657,12 @@ export default function TabOneScreen() {
             {/* Stops List */}
             <View className="flex-1">
               <View className="flex-row items-center justify-between mb-3.5 px-1">
-                <Text className="text-lg font-black text-gray-900 dark:text-white">
+                <Text className="text-lg font-black tracking-tight text-slate-950 dark:text-white">
                   {t("stopsList")} ({stops.length})
                 </Text>
                 {stops.length > 0 && !process.env.EXPO_PUBLIC_TMAP_API_KEY && (
-                  <View className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25">
-                    <Text className="text-[9px] font-bold text-amber-700 dark:text-amber-400">
+                  <View className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                    <Text className="text-[9px] font-extrabold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
                       {t("simulationMode")}
                     </Text>
                   </View>
@@ -633,15 +670,15 @@ export default function TabOneScreen() {
               </View>
 
               {stops.length === 0 ? (
-                <View className="overflow-hidden rounded-3xl border border-white/20 dark:border-white/5 shadow-md">
-                  <BlurView intensity={25} tint={isDark ? "dark" : "light"} className="p-8 items-center bg-white/25 dark:bg-slate-900/20">
-                    <View className="p-4 bg-black/5 dark:bg-white/5 rounded-full mb-3">
-                      <MapPin color={isDark ? "#9CA3AF" : "#6B7280"} size={28} />
+                <View className="overflow-hidden rounded-3xl border border-slate-200/50 dark:border-slate-800/40 shadow-sm">
+                  <BlurView intensity={20} tint={isDark ? "dark" : "light"} className="p-8 items-center bg-white/20 dark:bg-slate-900/20">
+                    <View className="p-3.5 bg-slate-100 dark:bg-slate-800/50 rounded-2xl mb-3 border border-slate-200/50 dark:border-slate-800/45">
+                      <MapPin color={isDark ? "#64748b" : "#94a3b8"} size={24} strokeWidth={2.5} />
                     </View>
-                    <Text className="text-gray-800 dark:text-gray-200 font-bold text-base text-center">
+                    <Text className="text-slate-800 dark:text-slate-200 font-black text-base text-center">
                       {t("noStops")}
                     </Text>
-                    <Text className="text-gray-500 dark:text-gray-400 text-sm text-center mt-1">
+                    <Text className="text-slate-400 dark:text-slate-500 text-xs text-center mt-1 font-medium">
                       {t("addFirstStop")}
                     </Text>
                   </BlurView>
