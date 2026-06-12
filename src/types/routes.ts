@@ -7,6 +7,7 @@ export interface Stop {
   is_important: boolean;
   is_completed: boolean;
   display_order: number;
+  is_start: boolean;
 }
 
 // For Tmap API payload

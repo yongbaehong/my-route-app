@@ -6,9 +6,15 @@ const resources = {
   en: {
     translation: {
       optimize: "Optimize Route",
+      planRoute: "Plan your delivery route efficiently",
       addStop: "Add Stop",
+      stopsList: "Stops",
+      noStops: "No stops added yet",
+      addFirstStop: "Add your first stop to get started",
       complete: "Complete",
       priority: "Priority",
+      startPoint: "Start Point",
+      setStart: "Set as Start",
       delete: "Delete",
       nickname: "Nickname",
       address: "Address",
@@ -28,9 +34,15 @@ const resources = {
   ko: {
     translation: {
       optimize: "경로 최적화",
+      planRoute: "효율적으로 배송 경로를 계획하세요",
       addStop: "정류장 추가",
+      stopsList: "정류장 목록",
+      noStops: "아직 추가된 정류장이 없습니다",
+      addFirstStop: "시작하려면 첫 번째 정류장을 추가하세요",
       complete: "완료",
       priority: "우선순위",
+      startPoint: "출발지",
+      setStart: "출발지로 설정",
       delete: "삭제",
       nickname: "별명",
       address: "주소",

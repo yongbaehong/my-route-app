@@ -73,53 +73,84 @@ export const AddressEntry: React.FC<AddressEntryProps> = ({ onSave }) => {
   };
 
   return (
-    <View className="mb-4">
-      <Text className="text-lg font-semibold mb-2">{t("enterAddress")}</Text>
-
-      <View className="flex-row mb-2">
-        <TextInput
-          value={address}
-          onChangeText={setAddress}
-          placeholder={t("address")}
-          className="border border-gray-300 rounded p-2 flex-1 mr-2"
-        />
-        <TouchableOpacity
-          onPress={handleSearch}
-          disabled={loading}
-          className="bg-blue-500 p-2 rounded justify-center"
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Search color="white" size={20} />
-          )}
-        </TouchableOpacity>
+    <View>
+      {/* Address Input Section */}
+      <View className="mb-4">
+        <Text className="text-base font-medium text-gray-900 dark:text-white mb-2">
+          {t("address")}
+        </Text>
+        <View className="flex-row space-x-2">
+          <TextInput
+            value={address}
+            onChangeText={setAddress}
+            placeholder={t("enterAddress")}
+            placeholderTextColor="#9CA3AF"
+            className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            autoCapitalize="words"
+            autoCorrect={false}
+          />
+          <TouchableOpacity
+            onPress={handleSearch}
+            disabled={loading || !address.trim()}
+            className={`px-4 py-3 rounded-lg justify-center ${
+              loading || !address.trim()
+                ? "bg-gray-300 dark:bg-gray-600"
+                : "bg-blue-600 active:bg-blue-700"
+            }`}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" size="small" />
+            ) : (
+              <Search color="white" size={20} />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
+      {/* Search Result Display */}
       {searchResult && (
-        <View className="mb-2 p-2 bg-gray-100 rounded">
-          <Text className="text-sm">
-            {t("found")}: {searchResult.normalizedAddress}
+        <View className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+          <Text className="text-sm font-medium text-green-800 dark:text-green-200 mb-1">
+            {t("found")}
           </Text>
-          <Text className="text-xs text-gray-600">
-            Lat: {searchResult.lat}, Lng: {searchResult.lng}
+          <Text className="text-sm text-green-700 dark:text-green-300">
+            {searchResult.normalizedAddress}
+          </Text>
+          <Text className="text-xs text-green-600 dark:text-green-400 mt-1">
+            📍 Lat: {searchResult.lat.toFixed(6)}, Lng:{" "}
+            {searchResult.lng.toFixed(6)}
           </Text>
         </View>
       )}
 
-      <TextInput
-        value={nickname}
-        onChangeText={setNickname}
-        placeholder={t("nickname")}
-        className="border border-gray-300 rounded p-2 mb-2"
-      />
+      {/* Nickname Input */}
+      <View className="mb-4">
+        <Text className="text-base font-medium text-gray-900 dark:text-white mb-2">
+          {t("nickname")}
+        </Text>
+        <TextInput
+          value={nickname}
+          onChangeText={setNickname}
+          placeholder={t("enterNickname")}
+          placeholderTextColor="#9CA3AF"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          autoCapitalize="words"
+        />
+      </View>
 
+      {/* Save Button */}
       <TouchableOpacity
         onPress={handleSave}
-        disabled={!searchResult}
-        className={`p-2 rounded ${searchResult ? "bg-green-500" : "bg-gray-300"}`}
+        disabled={!searchResult || !nickname.trim()}
+        className={`p-3 rounded-lg ${
+          !searchResult || !nickname.trim()
+            ? "bg-gray-300 dark:bg-gray-600"
+            : "bg-green-600 active:bg-green-700"
+        }`}
       >
-        <Text className="text-white text-center">{t("saveStop")}</Text>
+        <Text className="text-white text-center font-semibold text-base">
+          {t("saveStop")}
+        </Text>
       </TouchableOpacity>
     </View>
   );

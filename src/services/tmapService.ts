@@ -2,6 +2,11 @@ export interface GeocodeResult {
   lat: number;
   lng: number;
   normalizedAddress: string;
+  city: string;
+  district: string;
+  dong: string;
+  buildingName: string;
+  zipcode: string;
 }
 
 export const searchAddress = async (
@@ -39,10 +44,40 @@ export const searchAddress = async (
     data.coordinateInfo.coordinate.length > 0
   ) {
     const coord = data.coordinateInfo.coordinate[0];
+    console.log("Extracted coordinate:", coord); // For debugging
+
+    const latStr =
+      coord.lat || coord.newLat || coord.newLatEntr || coord.latEntr || "";
+    const lngStr =
+      coord.lon ||
+      coord.newLon ||
+      coord.newLong ||
+      coord.newLongEntr ||
+      coord.lonEntr ||
+      "";
+
+    const lat = parseFloat(latStr);
+    const lng = parseFloat(lngStr);
+
+    if (Number.isNaN(lat) || Number.isNaN(lng)) {
+      console.log("No valid lat/lng in response");
+      return null;
+    }
+
+    const normalizedAddress =
+      `${coord.city_do || ""} ${coord.gu_gun || ""} ${coord.legalDong || ""}`.trim() ||
+      coord.fullAddress ||
+      address;
+
     return {
-      lat: parseFloat(coord.newLat),
-      lng: parseFloat(coord.newLon),
-      normalizedAddress: coord.fullAddress || address, // Use matched address or input
+      lat,
+      lng,
+      normalizedAddress,
+      city: coord.city_do || "",
+      district: coord.gu_gun || "",
+      dong: coord.legalDong || "",
+      buildingName: coord.buildingName || "",
+      zipcode: coord.zipcode || "",
     };
   }
 
